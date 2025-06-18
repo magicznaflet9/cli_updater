@@ -2,7 +2,8 @@
 Configuration module for the Orbitvu RAG Project.
 Contains shared constants and configuration settings.
 """
-
+import os
+TARGET_IMAGES_PATH = "/Users/zofiabochenek/Desktop/cli_updater/temp/images"
 
 # Pinecone host configuration
 HOSTS = [

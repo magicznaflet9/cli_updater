@@ -1,6 +1,14 @@
 import json
 import os
 
+def is_software(article_id, article_dir=None):
+    if get_manual_title(article_id, article_dir) == "Device manuals":
+        return False
+    elif get_manual_title(article_id, article_dir) == "Knowledge base and FAQ":
+        return False
+    else:
+        return True
+
 def get_meta_man_title(manual_id, manual_dir):
     """
     Load and return the metadata for a given manual ID.

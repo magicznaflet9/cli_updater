@@ -2,6 +2,9 @@ from ss_exporter import get_article, get_manual
 from src.tag_and_markdown import tag_and_markdown 
 from src.create_docs import load_documents
 from src.pinecone_ops import send_docs_to_pinecone, remove_article_pinecone
+from src.utils import is_software
+from src.config import TARGET_IMAGES_PATH
+from src.convert_images import convert_images_to_webp
 import os
 import shutil
 
@@ -113,23 +116,26 @@ def process_article(article_id, site_id, article_dir_path, debug=False):
         if debug:
             print(f"Debug mode is ON. Skipping document loading and vectorstore operations for article {article_id}.")
             return True
-        
+
+        isSoftware = is_software(article_id, article_dir_path)
         print(f"Loading documents for article {article_id}...")
-        docs = load_documents(article_id, article_dir_path, software=(site_id == 17606))
-        
-        
+        docs = load_documents(article_id, article_dir_path, software=isSoftware)
+
         if not docs:
             print("No documents were loaded. Processing failed.")
             return False
         
         print(f"Removing existing records for article {article_id} from vectorstore...")
-        if not remove_article_pinecone(article_id, software=(site_id == 17606), article_dir=article_dir_path):
+        if not remove_article_pinecone(article_id, software=isSoftware, article_dir=article_dir_path):
             print("Failed to remove existing records from vectorstore.")
             return False
         
         print(f"Sending new documents to vectorstore...")
-        result = send_docs_to_pinecone(docs, article_id, software=(site_id == 17606))
-        
+        result = send_docs_to_pinecone(docs, article_id, software=isSoftware)
+
+        images_path = os.path.join(article_dir_path, "images")
+        convert_images_to_webp(images_path, os.path.join(TARGET_IMAGES_PATH, f"{article_id}"))
+
         if result:
             print(f"Successfully processed article {article_id}.")
             return True

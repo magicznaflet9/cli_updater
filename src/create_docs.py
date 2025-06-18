@@ -74,12 +74,12 @@ def load_documents(article_id, article_dir_path, software=False):
     print(f"Successfully processed {len(documents)} total document chunks")
     return documents
 
-def create_documents(content, text_splitter, metadata, article_path, recursion_depth=0, max_depth=4):
+def create_documents(content, text_splitter, metadata, recursion_depth=0, max_depth=4, article_path=None):
     documents = []
     base_url = metadata["url"]
     article_id = metadata["article_id"]
 
-    images_path = os.path.join(article_path, "images/")
+    images_path = os.path.join(article_path, "images")
 
     try:
         # Apply the text splitter
@@ -137,7 +137,8 @@ def create_documents(content, text_splitter, metadata, article_path, recursion_d
                         new_splitter, 
                         local_metadata, 
                         recursion_depth + 1,
-                        max_depth
+                        max_depth,
+                        article_path=article_path
                     )
                     
                     documents.extend(sub_documents)
